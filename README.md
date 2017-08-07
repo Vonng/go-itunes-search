@@ -113,6 +113,7 @@ type Entry struct {
  `Entry.Print` provides an util for pretty-print. formatted as :
 
 ```
+
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ┃ iTunes Track [ software / software ]
 ┃	332615624 Bible - Daily Reading & Study Bible by Olive Tree (Bible - Daily Reading & Study Bible by Olive Tree)
@@ -131,33 +132,33 @@ type Entry struct {
 ┃ 	100:http://is4.mzstatic.com/image/thumb/Purple117/v4/62/1e/71/621e71b6-3238-914d-b219-37ebb9227411/source/100x100bb.jpg
 ┃ 	512:http://is4.mzstatic.com/image/thumb/Purple117/v4/62/1e/71/621e71b6-3238-914d-b219-37ebb9227411/source/512x512bb.jpg
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ Price:	0 USD Free
+┃ Price: 0 USD Free
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Environ:
-┃ Languages:	[EN DE PT ES]
-┃ Features:		[iosUniversal]
-┃ Devices:		[iPad2Wifi-iPad2Wifi iPad23G-iPad23G iPhone4S-iPhone4S iPadThirdGen-iPadThirdGen iPadThirdGen4G-iPadThirdGen4G iPhone5-iPhone5 iPodTouchFifthGen-iPodTouchFifthGen iPadFourthGen-iPadFourthGen iPadFourthGen4G-iPadFourthGen4G iPadMini-iPadMini iPadMini4G-iPadMini4G iPhone5c-iPhone5c iPhone5s-iPhone5s iPadAir-iPadAir iPadAirCellular-iPadAirCellular iPadMiniRetina-iPadMiniRetina iPadMiniRetinaCellular-iPadMiniRetinaCellular iPhone6-iPhone6 iPhone6Plus-iPhone6Plus iPadAir2-iPadAir2 iPadAir2Cellular-iPadAir2Cellular iPadMini3-iPadMini3 iPadMini3Cellular-iPadMini3Cellular iPodTouchSixthGen-iPodTouchSixthGen iPhone6s-iPhone6s iPhone6sPlus-iPhone6sPlus iPadMini4-iPadMini4 iPadMini4Cellular-iPadMini4Cellular iPadPro-iPadPro iPadProCellular-iPadProCellular iPadPro97-iPadPro97 iPadPro97Cellular-iPadPro97Cellular iPhoneSE-iPhoneSE iPhone7-iPhone7 iPhone7Plus-iPhone7Plus iPad611-iPad611 iPad612-iPad612 iPad71-iPad71 iPad72-iPad72 iPad73-iPad73 iPad74-iPad74]
-┃ SystemRequirement:	9.0
+┃	Languages: | [EN DE PT ES]
+┃	Features:  | [iosUniversal]
+┃	Devices:   | [iPad2Wifi-iPad2Wifi iPad23G-iPad23G iPhone4S-iPhone4S iPadThirdGen-iPadThirdGen iPadThirdGen4G-iPadThirdGen4G iPhone5-iPhone5 iPodTouchFifthGen-iPodTouchFifthGen iPadFourthGen-iPadFourthGen iPadFourthGen4G-iPadFourthGen4G iPadMini-iPadMini iPadMini4G-iPadMini4G iPhone5c-iPhone5c iPhone5s-iPhone5s iPadAir-iPadAir iPadAirCellular-iPadAirCellular iPadMiniRetina-iPadMiniRetina iPadMiniRetinaCellular-iPadMiniRetinaCellular iPhone6-iPhone6 iPhone6Plus-iPhone6Plus iPadAir2-iPadAir2 iPadAir2Cellular-iPadAir2Cellular iPadMini3-iPadMini3 iPadMini3Cellular-iPadMini3Cellular iPodTouchSixthGen-iPodTouchSixthGen iPhone6s-iPhone6s iPhone6sPlus-iPhone6sPlus iPadMini4-iPadMini4 iPadMini4Cellular-iPadMini4Cellular iPadPro-iPadPro iPadProCellular-iPadProCellular iPadPro97-iPadPro97 iPadPro97Cellular-iPadPro97Cellular iPhoneSE-iPhoneSE iPhone7-iPhone7 iPhone7Plus-iPhone7Plus iPad611-iPad611 iPad612-iPad612 iPad71-iPad71 iPad72-iPad72 iPad73-iPad73 iPad74-iPad74]
+┃	System:    | 9.0
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Rating:
-┃ TrackContentRating:		4+
-┃ ContentAdvisoryRating: 	4+
-┃ Reason:					[]
+┃ TrackContentRating:    | 4+
+┃ ContentAdvisoryRating: | 4+
+┃ RatingReason:          | []
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Ranking:
-┃	Current:	4.5	51772
-┃	Historic:	5	3157
+┃	Current:  | 4.5/51772
+┃	Historic: | 5/3157
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Screenshots:
-┃ Urls:	[http://a3.mzstatic.com/us/r30/Purple71/v4/f3/ae/c3/f3aec3f4-904d-1278-3082-93d22cd69928/screen696x696.jpeg http://a1.mzstatic.com/us/r30/Purple62/v4/c9/40/fe/c940fefb-f43e-b18d-d3b0-6d1dcd4e436f/screen696x696.jpeg http://a2.mzstatic.com/us/r30/Purple62/v4/d9/a5/8d/d9a58d76-f488-ac10-13a3-8a25e9026a1a/screen696x696.jpeg http://a3.mzstatic.com/us/r30/Purple71/v4/1d/a9/e7/1da9e785-1429-a59e-cb16-b18683fd8d33/screen696x696.jpeg http://a2.mzstatic.com/us/r30/Purple62/v4/ac/1b/5f/ac1b5f5e-5462-d7e8-6c97-a9e46251174e/screen696x696.jpeg]
-┃ Ipad:	[http://a5.mzstatic.com/us/r30/Purple71/v4/46/8f/aa/468faa35-47ea-81cf-f96c-1c34d63f7ed8/sc1024x768.jpeg http://a4.mzstatic.com/us/r30/Purple62/v4/b4/6e/bd/b46ebddc-dd3f-b0b1-e78e-85e1b03c8beb/sc1024x768.jpeg http://a3.mzstatic.com/us/r30/Purple62/v4/98/aa/f9/98aaf94e-f0e7-7000-4110-26e775070470/sc1024x768.jpeg http://a4.mzstatic.com/us/r30/Purple71/v4/0f/32/e1/0f32e1c0-574c-9624-6d39-8ec40f66c0ab/sc1024x768.jpeg http://a1.mzstatic.com/us/r30/Purple71/v4/0e/60/a3/0e60a3f4-0d74-1f67-523a-f5bfc65d3c9c/sc1024x768.jpeg]
-┃ TV:	[]
+┃ 	Urls: [http://a3.mzstatic.com/us/r30/Purple71/v4/f3/ae/c3/f3aec3f4-904d-1278-3082-93d22cd69928/screen696x696.jpeg http://a1.mzstatic.com/us/r30/Purple62/v4/c9/40/fe/c940fefb-f43e-b18d-d3b0-6d1dcd4e436f/screen696x696.jpeg http://a2.mzstatic.com/us/r30/Purple62/v4/d9/a5/8d/d9a58d76-f488-ac10-13a3-8a25e9026a1a/screen696x696.jpeg http://a3.mzstatic.com/us/r30/Purple71/v4/1d/a9/e7/1da9e785-1429-a59e-cb16-b18683fd8d33/screen696x696.jpeg http://a2.mzstatic.com/us/r30/Purple62/v4/ac/1b/5f/ac1b5f5e-5462-d7e8-6c97-a9e46251174e/screen696x696.jpeg]
+┃ 	Ipad: [http://a5.mzstatic.com/us/r30/Purple71/v4/46/8f/aa/468faa35-47ea-81cf-f96c-1c34d63f7ed8/sc1024x768.jpeg http://a4.mzstatic.com/us/r30/Purple62/v4/b4/6e/bd/b46ebddc-dd3f-b0b1-e78e-85e1b03c8beb/sc1024x768.jpeg http://a3.mzstatic.com/us/r30/Purple62/v4/98/aa/f9/98aaf94e-f0e7-7000-4110-26e775070470/sc1024x768.jpeg http://a4.mzstatic.com/us/r30/Purple71/v4/0f/32/e1/0f32e1c0-574c-9624-6d39-8ec40f66c0ab/sc1024x768.jpeg http://a1.mzstatic.com/us/r30/Purple71/v4/0e/60/a3/0e60a3f4-0d74-1f67-523a-f5bfc65d3c9c/sc1024x768.jpeg]
+┃ 	TV:   []
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ GameCenter Enabled              | false
-┃ VppDeviceBasedLicensingEnabled  | true
+┃ GameCenter Enabled | false
+┃ VppDevice Enabled  | true
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ FileSizeBytes                   | 124377088
-┃ Version                         | 6.2.7
+┃ Size    | 124377088
+┃ Version | 6.2.7
 ┗┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Description:
 Bible by Olive Tree is the best free Bible app for reading and studying God’s Holy Word and comes with great translations like the NIV, ESV, KJV, NKJV, and more!

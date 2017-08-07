@@ -73,33 +73,33 @@ const entryTemplateStr = `
 ┃ 	100:{{.ArtworkUrl100}}
 ┃ 	512:{{.ArtworkUrl512}}
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ Price:	{{.Price}} {{.Currency}} {{.FormattedPrice}}
+┃ Price: {{.Price}} {{.Currency}} {{.FormattedPrice}}
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Environ:
-┃ Languages:	{{.LanguageCodesISO2A}}
-┃ Features:		{{.Features}}
-┃ Devices:		{{.SupportedDevices}}
-┃ SystemRequirement:	{{.MinimumOsVersion}}
+┃	Languages: | {{.LanguageCodesISO2A}}
+┃	Features:  | {{.Features}}
+┃	Devices:   | {{.SupportedDevices}}
+┃	System:    | {{.MinimumOsVersion}}
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Rating:
-┃ TrackContentRating:		{{.TrackContentRating}}
-┃ ContentAdvisoryRating: 	{{.ContentAdvisoryRating}}
-┃ Reason:					{{.Advisories}}
+┃ TrackContentRating:    | {{.TrackContentRating}}
+┃ ContentAdvisoryRating: | {{.ContentAdvisoryRating}}
+┃ RatingReason:          | {{.Advisories}}
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Ranking:
-┃	Current:	{{.AverageUserRating}}	{{.UserRatingCount}}
-┃	Historic:	{{.AverageUserRatingForCurrentVersion}}	{{.UserRatingCountForCurrentVersion}}
+┃	Current:  | {{.AverageUserRating}}/{{.UserRatingCount}}
+┃	Historic: | {{.AverageUserRatingForCurrentVersion}}/{{.UserRatingCountForCurrentVersion}}
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Screenshots:
-┃ Urls:	{{.ScreenshotUrls}}
-┃ Ipad:	{{.IpadScreenshotUrls}}
-┃ TV:	{{.AppletvScreenshotUrls}}
+┃ 	Urls: {{.ScreenshotUrls}}
+┃ 	Ipad: {{.IpadScreenshotUrls}}
+┃ 	TV:   {{.AppletvScreenshotUrls}}
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ GameCenter Enabled              | {{.IsGameCenterEnabled}}
-┃ VppDeviceBasedLicensingEnabled  | {{.IsVppDeviceBasedLicensingEnabled}}
+┃ GameCenter Enabled | {{.IsGameCenterEnabled}}
+┃ VppDevice Enabled  | {{.IsVppDeviceBasedLicensingEnabled}}
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ FileSizeBytes                   | {{.FileSizeBytes                   }}
-┃ Version                         | {{.Version                         }}
+┃ Size    | {{.FileSizeBytes}}
+┃ Version | {{.Version}}
 ┗┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Description:
 {{.Description}}
