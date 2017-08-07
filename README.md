@@ -31,7 +31,10 @@ search with keyword `Hello` & `World`，US AppStore，Restrict media type to `So
 ```go
 func TestSearch(t *testing.T) {
 	res, _ := Search([]string{"Hello", "World"}).
-		Country(US).App().Limit(5).Results()
+		Country(US).
+		App().
+		Limit(5).
+		Results()
 
 	for _, r := range res {
 		r.Print()
@@ -221,7 +224,20 @@ If you enjoy the app please leave us a review. It really means a lot!
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
+### other
+
+other small examples
+
+```go
+SearchOne("世界").Country(CN).Entities([]string{Movie,Music}).Results()
+SearchOne("Love").Media(Music).Entity(MusicArtist).Limit(5).Results()
+Lookup().ID(529479190).Result()
+Lookup().Country(GB).ID(529479190).Result()
+Lookup().BundleID("com.supercell.magic").Result()
+```
+
 check [`api_test.go`](api_test.go) for more details & examples.
+
 
 
 

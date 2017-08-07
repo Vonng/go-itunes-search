@@ -106,9 +106,10 @@ func (self Params) BundleID(bundleID string) Params {
 
 // App: restrict to application
 func (self Params) App() Params {
-	self.Values.Set("media", MediaSoftware)
+	self.Values.Set("media", Software)
 	return self
 }
+
 
 func (self Params) Limit(n int) Params {
 	if n > 200 {

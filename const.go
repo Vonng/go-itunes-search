@@ -12,41 +12,42 @@ const (
 
 // Media List
 const (
-	MediaMovie      = "movie"      // movieArtist, movie
-	MediaPodcast    = "podcast"    // podcastAuthor, podcast
-	MediaMusic      = "music"      // musicArtist, musicTrack, album, musicVideo, mix, song.
-	MediaMusicVideo = "musicVideo" // musicArtist, musicVideo
-	MediaAudioBook  = "audiobook"  // audiobookAuthor, audiobook
-	MediaShortFilm  = "shortFilm"  // shortFilmArtist, shortFilm
-	MediaTvShow     = "tvShow"     // tvEpisode, tvSeason
-	MediaSoftware   = "software"   // software, iPadSoftware, macSoftware
-	MediaEbook      = "ebook"      // ebook
-	MediaAll        = "all"        // movie, album, allArtist, podcast, musicVideo, mix, audiobook, tvSeason, allTrack
+	Movie      = "movie"      // movieArtist, movie
+	Podcast    = "podcast"    // podcastAuthor, podcast
+	Music      = "music"      // musicArtist, musicTrack, album, musicVideo, mix, song.
+	MusicVideo = "musicVideo" // musicArtist, musicVideo
+	AudioBook  = "audiobook"  // audiobookAuthor, audiobook
+	ShortFilm  = "shortFilm"  // shortFilmArtist, shortFilm
+	TvShow     = "tvShow"     // tvEpisode, tvSeason
+	Software   = "software"   // software, iPadSoftware, macSoftware
+	Ebook      = "ebook"      // ebook
+	All        = "all"        // movie, album, allArtist, podcast, musicVideo, mix, audiobook, tvSeason, allTrack
 )
 
 // Entity List
 const (
-	EntityMovie           = "movie"
-	EntityMovieArtist     = "musicArtist"
-	EntityPodcast         = "podcast"
-	EntityPodcastAuthor   = "podcastAuthor"
-	EntityMusicTrack      = "musicTrack"
-	EntityMusicArtist     = "musicArtist"
-	EntityAlbum           = "Album"
-	EntityMusicVideo      = "musicVideo"
-	EntityMix             = "mix"
-	EntitySong            = "song"
-	EntityAudioBook       = "audiobook"
-	EntityAudioBookAuthor = "audiobookAuthor"
-	EntityShortFilm       = "shortFilm"
-	EntityShortFilmArtist = "shortFilmArtist"
-	EntityTvEpisode       = "tvEpisode"
-	EntityTvSeason        = "tvSeason"
-	EntitySoftware        = "software"
-	EntityIPadSoftware    = "iPadSoftware"
-	EntityMacSoftware     = "macSoftware"
-	EntityEBook           = "ebook"
-	EntityAllTrack        = "allTrack"
+	// Media const could be used as Entity
+	// Movie        = "movie"
+	// Podcast      = "podcast"
+	// MusicVideo   = "musicVideo"
+	// AudioBook    = "audiobook"
+	// ShortFilm    = "shortFilm"
+	// Software     = "software"
+	MovieArtist     = "musicArtist"
+	PodcastAuthor   = "podcastAuthor"
+	MusicTrack      = "musicTrack"
+	MusicArtist     = "musicArtist"
+	Album           = "Album"
+	Mix             = "mix"
+	Song            = "song"
+	AudioBookAuthor = "audiobookAuthor"
+	ShortFilmArtist = "shortFilmArtist"
+	TvEpisode       = "tvEpisode"
+	TvSeason        = "tvSeason"
+	IPadSoftware    = "iPadSoftware"
+	MacSoftware     = "macSoftware"
+	EBook           = "ebook"
+	AllTrack        = "allTrack"
 )
 
 // lookup key type
