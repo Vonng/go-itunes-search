@@ -1,10 +1,12 @@
 # iTunes Search API for Golang
 
-
+`go-itunes-search` is a golang wrapper for [iTunes Search API](https://affiliate.itunes.apple.com/resources/documentation/itunes-store-web-service-search-api/#lookup) 
 
 ## Reference
 
-[iTunes Search API Document](https://affiliate.itunes.apple.com/resources/documentation/itunes-store-web-service-search-api/)
+See [iTunes Search API Document](https://affiliate.itunes.apple.com/resources/documentation/itunes-store-web-service-search-api/) for more details.
+
+
 
 ## Install
 
@@ -12,25 +14,24 @@
 go get github.com/Vonng/go-itunes-search
 ```
 
+
+
 ## Usage
+
+### import
 
 ```go
 import . "github.com/Vonng/go-itunes-search"
 ```
 
 ### Search Example
+
+search with keyword `Hello` & `World`，US AppStore，Restrict media type to `Software`，At more 5 result.
+
 ```go
 func TestSearch(t *testing.T) {
-	res, err := Search().
-  				Media(MediaSoftware).
-  				Country(US).
-  				Term("Hello").
-  				Limit(2).
-  				Results()
-  
-	if err != nil {
-		t.Error(err)
-	}
+	res, _ := Search([]string{"Hello", "World"}).
+		Country(US).App().Limit(5).Results()
 
 	for _, r := range res {
 		r.Print()
@@ -38,105 +39,102 @@ func TestSearch(t *testing.T) {
 }
 ```
 
-that will produce output like:
+result is fetched via `.Results` or `.Result`，the latter assert only one result is returned so it returns `*Entry` rather than `[]Entry`。
+
+### Lookup API
+
+if you know something could used to identify a track, then lookup API may be a better approach.
+Instead of specifying `term`, you need something like `iTunesID (track_id)`, `BundleID`(app only), `AMG ID`, etc…。And when using lookup API, there could only be one or zero entry being returned. So the API chain may end with `Result` rather than `Results`
+
+Here's how it works, these lookups may return same results:
+
+```go
+Lookup().ID(414478124).Country(CN).Result()
+Lookup().BundleID("com.tencent.xin").Result()
+Lookup().Set(BundleID, "com.tencent.xin").Result()
+```
+
+### Entry
+
+`Entry` contains many fields: 
+
+```
+type Entry struct {
+	TrackID                            int64    `json:"trackId"` // Track
+	TrackName                          string   `json:"trackName"`
+	TrackCensoredName                  string   `json:"trackCensoredName"`
+	TrackViewUrl                       string   `json:"trackViewUrl"`
+	BundleID                           string   `json:"bundleId"` // App bundle
+	ArtistID                           int64    `json:"artistId"` // Artist
+	ArtistName                         string   `json:"artistName"`
+	ArtistViewUrl                      string   `json:"artistViewUrl"`
+	SellerName                         string   `json:"sellerName"` // Seller
+	SellerUrl                          string   `json:"sellerUrl"`
+	PrimaryGenreID                     int64    `json:"primaryGenreId"` // Genre
+	PrimaryGenreName                   string   `json:"primaryGenreName"`
+	Genres                             []string `json:"genres"`
+	GenreIDs                           []string `json:"genreIds"`
+	ArtworkUrl60                       string   `json:"artworkUrl60"` // Icon
+	ArtworkUrl100                      string   `json:"artworkUrl100"`
+	ArtworkUrl512                      string   `json:"artworkUrl512"`
+	Price                              float64  `json:"price"` // Price
+	Currency                           string   `json:"currency"`
+	FormattedPrice                     string   `json:"formattedPrice"`
+	LanguageCodesISO2A                 []string `json:"languageCodesISO2A"` // Platform
+	Features                           []string `json:"features"`
+	SupportedDevices                   []string `json:"supportedDevices"`
+	MinimumOsVersion                   string   `json:"minimumOsVersion"`
+	TrackContentRating                 string   `json:"trackContentRating"`
+	ContentAdvisoryRating              string   `json:"contentAdvisoryRating"` // Rating
+	Advisories                         []string `json:"advisories"`
+	UserRatingCount                    int64    `json:"userRatingCount"` // Ranking
+	AverageUserRating                  float64  `json:"averageUserRating"`
+	UserRatingCountForCurrentVersion   int64    `json:"userRatingCountForCurrentVersion"`
+	AverageUserRatingForCurrentVersion float64  `json:"averageUserRatingForCurrentVersion"`
+	Kind                               string   `json:"kind"` // Type
+	WrapperType                        string   `json:"wrapperType"`
+	ScreenshotUrls                     []string `json:"screenshotUrls"` // Screenshots
+	IpadScreenshotUrls                 []string `json:"ipadScreenshotUrls"`
+	AppletvScreenshotUrls              []string `json:"appletvScreenshotUrls"`
+	IsGameCenterEnabled                bool     `json:"isGameCenterEnabled"` // Flags
+	IsVppDeviceBasedLicensingEnabled   bool     `json:"isVppDeviceBasedLicensingEnabled"`
+	FileSizeBytes                      string   `json:"fileSizeBytes"` // Attribute
+	Version                            string   `json:"version"`
+	Description                        string   `json:"description"`
+	ReleaseNotes                       string   `json:"releaseNotes"`
+	ReleaseDate                        string   `json:"releaseDate"`
+	CurrentVersionReleaseDate          string   `json:"currentVersionReleaseDate"`
+}
+```
+
+ `Entry.Print` provides an util for pretty-print. formatted as :
 
 ```
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ┃ iTunes Track [ software / software ]
-┃	508231856 Zello Walkie Talkie (Zello Walkie Talkie)
-┃	[com.zello.client.main]  https://itunes.apple.com/us/app/zello-walkie-talkie/id508231856?mt=8&uo=4
+┃	332615624 Bible - Daily Reading & Study Bible by Olive Tree (Bible - Daily Reading & Study Bible by Olive Tree)
+┃	[com.olivetree.BR-Free]  https://itunes.apple.com/us/app/bible-daily-reading-study-bible-by-olive-tree/id332615624?mt=8&uo=4
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Artist:
-┃	508231859 Zello  https://itunes.apple.com/us/developer/zello/id508231859?uo=4
-┃	Zello Inc http://zello.com
+┃	444535393 HarperCollins Christian Publishing, Inc.  https://itunes.apple.com/us/developer/harpercollins-christian-publishing-inc/id444535393?uo=4
+┃	HarperCollins Christian Publishing, Inc. http://www.olivetree.com
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Genre:
-┃	6005 Social Networking
-┃	[6005 6000] [Social Networking Business]
+┃	6006 Reference
+┃	[6006 6018] [Reference Books]
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Icon:
-┃ 	60:	http://is2.mzstatic.com/image/thumb/Purple128/v4/15/01/2a/15012ae5-f5fb-8f57-43ff-b352599b3b07/source/60x60bb.jpg
-┃ 	100:http://is2.mzstatic.com/image/thumb/Purple128/v4/15/01/2a/15012ae5-f5fb-8f57-43ff-b352599b3b07/source/100x100bb.jpg
-┃ 	512:http://is2.mzstatic.com/image/thumb/Purple128/v4/15/01/2a/15012ae5-f5fb-8f57-43ff-b352599b3b07/source/512x512bb.jpg
+┃ 	60:	http://is4.mzstatic.com/image/thumb/Purple117/v4/62/1e/71/621e71b6-3238-914d-b219-37ebb9227411/source/60x60bb.jpg
+┃ 	100:http://is4.mzstatic.com/image/thumb/Purple117/v4/62/1e/71/621e71b6-3238-914d-b219-37ebb9227411/source/100x100bb.jpg
+┃ 	512:http://is4.mzstatic.com/image/thumb/Purple117/v4/62/1e/71/621e71b6-3238-914d-b219-37ebb9227411/source/512x512bb.jpg
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Price:	0 USD Free
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Environ:
-┃ Languages:	[AR BG ZH HR NL EN FR HE ID IT JA NB PL PT RU ZH ES SV TR]
-┃ Features:		[]
-┃ Devices:		[iPad2Wifi-iPad2Wifi iPad23G-iPad23G iPhone4S-iPhone4S iPadThirdGen-iPadThirdGen iPadThirdGen4G-iPadThirdGen4G iPhone5-iPhone5 iPodTouchFifthGen-iPodTouchFifthGen iPadFourthGen-iPadFourthGen iPadFourthGen4G-iPadFourthGen4G iPadMini-iPadMini iPadMini4G-iPadMini4G iPhone5c-iPhone5c iPhone5s-iPhone5s iPadAir-iPadAir iPadAirCellular-iPadAirCellular iPadMiniRetina-iPadMiniRetina iPadMiniRetinaCellular-iPadMiniRetinaCellular iPhone6-iPhone6 iPhone6Plus-iPhone6Plus iPadAir2-iPadAir2 iPadAir2Cellular-iPadAir2Cellular iPadMini3-iPadMini3 iPadMini3Cellular-iPadMini3Cellular iPodTouchSixthGen-iPodTouchSixthGen iPhone6s-iPhone6s iPhone6sPlus-iPhone6sPlus iPadMini4-iPadMini4 iPadMini4Cellular-iPadMini4Cellular iPadPro-iPadPro iPadProCellular-iPadProCellular iPadPro97-iPadPro97 iPadPro97Cellular-iPadPro97Cellular iPhoneSE-iPhoneSE iPhone7-iPhone7 iPhone7Plus-iPhone7Plus iPad611-iPad611 iPad612-iPad612 iPad71-iPad71 iPad72-iPad72 iPad73-iPad73 iPad74-iPad74]
-┃ SystemRequirement:	8.0
-┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ Rating:
-┃ TrackContentRating:		12+
-┃ ContentAdvisoryRating: 	12+
-┃ Reason:					[Infrequent/Mild Sexual Content and Nudity Infrequent/Mild Profanity or Crude Humor]
-┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ Ranking:
-┃	Current:	4.5	3324
-┃	Historic:	3	2
-┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ Screenshots:
-┃ Urls:	[http://a2.mzstatic.com/us/r30/Purple1/v4/bb/b3/76/bbb37650-043b-3cf6-967e-7d8730a4f7d6/screen696x696.jpeg http://a1.mzstatic.com/us/r30/Purple3/v4/c9/f0/5c/c9f05c30-6400-50af-c0a6-c3449f27e5e8/screen696x696.jpeg http://a2.mzstatic.com/us/r30/Purple3/v4/bc/81/dd/bc81dd21-5c69-12b2-eb56-7c5f21c7cf7b/screen696x696.jpeg http://a1.mzstatic.com/us/r30/Purple1/v4/28/94/78/289478ad-6f8c-4f7b-f522-954885426c14/screen696x696.jpeg]
-┃ Ipad:	[]
-┃ TV:	[]
-┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ GameCenter Enabled              | false
-┃ VppDeviceBasedLicensingEnabled  | true
-┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ FileSizeBytes                   | 39574528
-┃ Version                         | 3.40
-┗┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-Description:
-Zello is the place for free live private and public conversations.
-
-Join millions of people who use Zello instead of texting.  You can use it one-on-one with a friend, for a live group call with your family or soccer team.  The Zello app can even replace 2-way radios at work.
-
-Zello is the only place for live open group communication – old school CB Radio style. Create a live Zello channel for your forum or customers, or enjoy conversations from across the globe.
-
-+ Free live voice over any network or Wi-Fi connection
-+ See who’s available or busy
-+ Send photos to friends instantly
-+ Replay messages later, even if your phone was off
-+ Cross-platform
-+ Free with no ads
-+ Won’t spam your friends
-+ Lets you delete your account
-+ Supports Apple Watch as remote control (no audio support yet)
-┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-ReleaseNotes:
-- Improved Send location function
-- Faster sign in for accounts with large contact lists
-- Bugfixes
-┏┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ ReleaseDate                     | 2012-03-29T20:21:28Z
-┃ CurrentVersionReleaseDate       | 2017-07-31T18:27:33Z
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-┃ iTunes Track [ software / software ]
-┃	582654048 Sonic Dash (Sonic Dash)
-┃	[com.sega.sonicdash]  https://itunes.apple.com/us/app/sonic-dash/id582654048?mt=8&uo=4
-┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ Artist:
-┃	281966698 SEGA  https://itunes.apple.com/us/developer/sega/id281966698?mt=8&uo=4
-┃	Sega America http://www.sega.com
-┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ Genre:
-┃	6014 Games
-┃	[6014 7001 7003] [Games Action Arcade]
-┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ Icon:
-┃ 	60:	http://is4.mzstatic.com/image/thumb/Purple127/v4/63/17/22/631722ec-a856-d18e-2375-cdc6c328fdb4/source/60x60bb.jpg
-┃ 	100:http://is4.mzstatic.com/image/thumb/Purple127/v4/63/17/22/631722ec-a856-d18e-2375-cdc6c328fdb4/source/100x100bb.jpg
-┃ 	512:http://is4.mzstatic.com/image/thumb/Purple127/v4/63/17/22/631722ec-a856-d18e-2375-cdc6c328fdb4/source/512x512bb.jpg
-┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ Price:	0 USD Free
-┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ Environ:
-┃ Languages:	[EN FR DE IT PT RU ES]
+┃ Languages:	[EN DE PT ES]
 ┃ Features:		[iosUniversal]
 ┃ Devices:		[iPad2Wifi-iPad2Wifi iPad23G-iPad23G iPhone4S-iPhone4S iPadThirdGen-iPadThirdGen iPadThirdGen4G-iPadThirdGen4G iPhone5-iPhone5 iPodTouchFifthGen-iPodTouchFifthGen iPadFourthGen-iPadFourthGen iPadFourthGen4G-iPadFourthGen4G iPadMini-iPadMini iPadMini4G-iPadMini4G iPhone5c-iPhone5c iPhone5s-iPhone5s iPadAir-iPadAir iPadAirCellular-iPadAirCellular iPadMiniRetina-iPadMiniRetina iPadMiniRetinaCellular-iPadMiniRetinaCellular iPhone6-iPhone6 iPhone6Plus-iPhone6Plus iPadAir2-iPadAir2 iPadAir2Cellular-iPadAir2Cellular iPadMini3-iPadMini3 iPadMini3Cellular-iPadMini3Cellular iPodTouchSixthGen-iPodTouchSixthGen iPhone6s-iPhone6s iPhone6sPlus-iPhone6sPlus iPadMini4-iPadMini4 iPadMini4Cellular-iPadMini4Cellular iPadPro-iPadPro iPadProCellular-iPadProCellular iPadPro97-iPadPro97 iPadPro97Cellular-iPadPro97Cellular iPhoneSE-iPhoneSE iPhone7-iPhone7 iPhone7Plus-iPhone7Plus iPad611-iPad611 iPad612-iPad612 iPad71-iPad71 iPad72-iPad72 iPad73-iPad73 iPad74-iPad74]
-┃ SystemRequirement:	8.0
+┃ SystemRequirement:	9.0
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Rating:
 ┃ TrackContentRating:		4+
@@ -144,176 +142,86 @@ ReleaseNotes:
 ┃ Reason:					[]
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Ranking:
-┃	Current:	4.5	420269
-┃	Historic:	4.5	1857
+┃	Current:	4.5	51772
+┃	Historic:	5	3157
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Screenshots:
-┃ Urls:	[http://a2.mzstatic.com/us/r30/Purple91/v4/5b/d5/5b/5bd55bb2-096d-7e11-a526-322e9940a014/screen696x696.jpeg http://a5.mzstatic.com/us/r30/Purple111/v4/6b/5b/13/6b5b1338-8d88-d9e7-269d-6ed589619381/screen696x696.jpeg http://a2.mzstatic.com/us/r30/Purple122/v4/61/9b/df/619bdf77-0c13-3fe0-68c0-dba7b706ea68/screen696x696.jpeg http://a3.mzstatic.com/us/r30/Purple111/v4/3b/b0/88/3bb0880c-2c9a-c339-b5ea-55f66ea2d288/screen696x696.jpeg http://a3.mzstatic.com/us/r30/Purple122/v4/7b/87/67/7b876735-eb53-05c6-e5e0-03a0e2786ef6/screen696x696.jpeg]
-┃ Ipad:	[http://a4.mzstatic.com/us/r30/Purple111/v4/48/2d/cb/482dcb48-d047-9ea2-9e29-c9c6eb7dccdb/sc1024x768.jpeg http://a2.mzstatic.com/us/r30/Purple111/v4/d5/f1/36/d5f136b1-57b7-93c9-985d-b16216f40c62/sc1024x768.jpeg http://a5.mzstatic.com/us/r30/Purple122/v4/ec/f0/20/ecf02097-95b9-8ae3-c545-011421b35c9a/sc1024x768.jpeg http://a2.mzstatic.com/us/r30/Purple111/v4/6f/fd/db/6ffddb4a-4180-df70-e88b-2fa5a8155383/sc1024x768.jpeg http://a3.mzstatic.com/us/r30/Purple111/v4/2e/f5/4f/2ef54f89-4df0-b26a-b37b-dd55f4a25ce3/sc1024x768.jpeg]
+┃ Urls:	[http://a3.mzstatic.com/us/r30/Purple71/v4/f3/ae/c3/f3aec3f4-904d-1278-3082-93d22cd69928/screen696x696.jpeg http://a1.mzstatic.com/us/r30/Purple62/v4/c9/40/fe/c940fefb-f43e-b18d-d3b0-6d1dcd4e436f/screen696x696.jpeg http://a2.mzstatic.com/us/r30/Purple62/v4/d9/a5/8d/d9a58d76-f488-ac10-13a3-8a25e9026a1a/screen696x696.jpeg http://a3.mzstatic.com/us/r30/Purple71/v4/1d/a9/e7/1da9e785-1429-a59e-cb16-b18683fd8d33/screen696x696.jpeg http://a2.mzstatic.com/us/r30/Purple62/v4/ac/1b/5f/ac1b5f5e-5462-d7e8-6c97-a9e46251174e/screen696x696.jpeg]
+┃ Ipad:	[http://a5.mzstatic.com/us/r30/Purple71/v4/46/8f/aa/468faa35-47ea-81cf-f96c-1c34d63f7ed8/sc1024x768.jpeg http://a4.mzstatic.com/us/r30/Purple62/v4/b4/6e/bd/b46ebddc-dd3f-b0b1-e78e-85e1b03c8beb/sc1024x768.jpeg http://a3.mzstatic.com/us/r30/Purple62/v4/98/aa/f9/98aaf94e-f0e7-7000-4110-26e775070470/sc1024x768.jpeg http://a4.mzstatic.com/us/r30/Purple71/v4/0f/32/e1/0f32e1c0-574c-9624-6d39-8ec40f66c0ab/sc1024x768.jpeg http://a1.mzstatic.com/us/r30/Purple71/v4/0e/60/a3/0e60a3f4-0d74-1f67-523a-f5bfc65d3c9c/sc1024x768.jpeg]
 ┃ TV:	[]
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ GameCenter Enabled              | false
 ┃ VppDeviceBasedLicensingEnabled  | true
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ FileSizeBytes                   | 179712000
-┃ Version                         | 3.7.3
+┃ FileSizeBytes                   | 124377088
+┃ Version                         | 6.2.7
 ┗┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Description:
-"A perfect blend of Temple Run-style gaming and the lightspeed nature of Sonic. Amazing visuals. It feels as fast, fun and frantic as you've been wanting Sonic to for a long time." - 5/5 Gamezebo
+Bible by Olive Tree is the best free Bible app for reading and studying God’s Holy Word and comes with great translations like the NIV, ESV, KJV, NKJV, and more!
 
-4/5 - Common Sense Media 
+Do more than just read your Bible - take notes, highlights, and save passages and sync to all your devices. This free Bible Study App features a powerful Resource Guide that links your Bible text with outstanding study Bibles, maps, commentaries, and more for an in-depth Bible study experience. Start a Bible reading plan and Bible will track your progress as you read through Scripture. Our unique split window allows you to create your own customized parallel Bible to easily compare Bible translations. Install now and explore over 100 more free titles with full offline functionality!
 
-How far can the world’s fastest hedgehog run?
+In addition to the New International Version (NIV), King James Version (KJV), English Standard Version (ESV), New King James Version bible that work offline, you can also download dozens of free study resources. Even more translations and great study resources are also available for purchase in-app.
 
-Play as Sonic the Hedgehog as you dash, jump and spin your way across stunning 3D environments.  Swipe your way over and under challenging obstacles in this fast and frenzied endless running game for iPad, iPad mini, iPhone & iPod touch.
 
-SONIC…
-The world famous Sonic the Hedgehog stars in his first endless running game – how far can you go?
+OFFLINE BIBLE STUDY
+Read and study whether you’re connected or not. Your library, notes, highlights and all of the app features are stored on your device so that you have full functionality when you are offline or in airplane mode.
 
-…DASH!
-Unleash Sonic’s incredible dash move that allows you to run at insane speed and destroy everything in your path!
+CLOUD SYNC
+Sync your Bible study resources, highlights, notes, save passages, and book ribbons between any devices with Bible.
 
-AMAZING ABILITIES
-Utilise Sonic’s powers to dodge hazards, jump over barriers and speed around loop de loops.  Plus defeat enemies using Sonic’s devastating homing attack!
+POWERFUL RESOURCE GUIDE
+With our one-of-a-kind Resource Guide, perform powerful searches through your entire Library of Bibles, Bible commentaries, Bible dictionaries, and more.
 
-STUNNING GRAPHICS
-Sonic’s beautifully detailed world comes to life on mobile and tablet – never has an endless runner looked so good!
+SIDE-BY-SIDE STUDY
+The split window feature allows you to create your own customized parallel Bible for translation comparison, view your study notes while you read, or follow along with a commentary while you study Scripture.
 
-MULTIPLE CHARACTERS
-Choose to play as one of Sonic’s friends, including Tails, Shadow and Knuckles.
+IMMERSIVE BIBLE STUDY
+• Remove distractions by opening your books and Bibles in full screen and immerse yourself in Scripture. 
+• Night theme for easier reading in lowlight. 
 
-EPIC BOSS BATTLES
-Face off against two of Sonic's biggest rivals, the always scheming and cunning Dr. Eggman and the devastatingly deadly Zazz from Sonic Lost World! Use all of Sonic's agility and speed to take down these villains before it's too late!
+PERSONAL BIBLE STUDY
+• Highlight words and passages
+• Take your own personalized notes
+• Save your favorite passages 
+• Tag anything to find it quickly later
+• Leave a book ribbon on a page in order to pick up where you left off
+• Select and copy text from any Bible or book in your Library
 
-POWERUPS
-Unlock, win or buy ingenious power-ups to help you run further. Including head starts, shields, ring magnets and unique score boosters!
+DAILY READING PLANS
+• Free downloadable reading plans on various topics, books of the Bible, or specific biblical characters
+• Sync your reading plan across your devices with Bible+
+• Plans vary in length with options as short as 5 days to as long as three years!
 
-KEEP ON RUNNING
-Get more rewards the more you play! Level up your score multiplier by completing unique missions, or win amazing prizes including Red Star Rings & additional characters by completing Daily Challenges and playing the Daily Spin.
+SOCIAL BIBLE STUDY
+Instantly share the Bible with your friends from inside the app. Tap on a verse to share it through Twitter, Facebook or via email.
 
-SOCIALLY CONNECTED
-Challenge your friends on the leader boards or invite your friends through Facebook to prove who the best speed runner is…
+OTHER BIBLE STUDY RESOURCES AVAILABLE FOR PURCHASE IN-APP:
 
-COMING SOON
-We’re working hard to bring you future FREE updates!
+• The Message, Amplified Bible, New American Standard Bible (NASB), New Living Translation (NLT), New Revised Standard Version (NRSV), and over 100 more!
+• Best-selling study Bibles: ESV Study Bible, NLT Study Bible, NIV Study Notes, NKJV Study Notes, Life Application Study Bible, Reformation Study Bible Notes
+• Word Study Bibles with Strong’s Numbers in NIV, KJV, ESV, NKJV, HCSB and NASB Bible translations
+• Commentaries and Study Tools: Vine’s Expository Dictionary, Expositor’s Bible Commentary; Olive Tree Bible Maps, Bible Knowledge Commentary, Zondervan Atlas of the Bible
+• Interlinear Bibles: Easily compare the Original Languages of the Bible with ESV, KJV, and NKJV Bible translations.
+• Harmony of the Gospels: Read through the life of Jesus chronologically with our unique Gospel harmonies.
+• Original language Bibles: Greek New Testament: NA28 & UBS-4; Hebrew Old Testament: BHS; Greek Old Testament: Septuaginta, LXX
+• Non-English Bibles including Spanish, Portuguese, German and more: Reina-Valera, Almeida Revista e Atualizada, Dios Habla Hoy, Luther Bibel 1984, Louis Segond, Indonesian Bible
 
-Sonic Dash supports iPhone 4 and higher, iPad 2 and higher, and iPod touch v5 and higher. 
-PLEASE NOTE: iPod Touch 4th generation devices are currently not supported.
-
-- - - - -
-Privacy Policy: http://www.sega.com/mprivacy
-Terms of Use: http://www.sega.com/terms
-
-This game may include "Interest Based Ads" ​(please see http://www.sega.com/mprivacy#3IBADiscolure​ for more information)​​ and may collect "Precise Location Data" ​(please see http://www.sega.com/mprivacy#5LocationDataDisclosure​ for more information)
+AND MANY MORE!
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ReleaseNotes:
-It's time to go fast all over again with improved stability and bug fixes!
+Thanks for using the Olive Tree Bible App!
+
+In this release we added the ability to swipe to mark messages as read in our message center. We also fixed a number of bugs that were trying to get in the way of your reading and study. 
+
+If you enjoy the app please leave us a review. It really means a lot!
 ┏┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ ReleaseDate                     | 2013-03-07T08:00:00Z
-┃ CurrentVersionReleaseDate       | 2017-06-22T16:04:16Z
+┃ ReleaseDate                     | 2009-10-02T22:47:42Z
+┃ CurrentVersionReleaseDate       | 2017-07-10T16:31:08Z
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-## Lookup API
-
-if you know something could used to identify a track, then lookup API may be a better approach.
-Instead of specifying `term`, you need something like `iTunesID (track_id)`, `bundleID`(app only), `AMG ID`, etc...
-
-Here's how it works:
-```go
-
-res, _ := Lookup().ID(414478124).Country(CN)
-res.Print()
-```
-
-and it produce:
-
-```
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-┃ iTunes Track [ software / software ]
-┃	414478124 微信 (微信)
-┃	[com.tencent.xin]  https://itunes.apple.com/cn/app/%E5%BE%AE%E4%BF%A1/id414478124?mt=8&uo=4
-┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ Artist:
-┃	614694882 WeChat  https://itunes.apple.com/cn/developer/wechat/id614694882?uo=4
-┃	Tencent Technology (Shenzhen) Company Limited http://weixin.qq.com
-┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ Genre:
-┃	6005 Social Networking
-┃	[6005 6007] [社交 效率]
-┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ Icon:
-┃ 	60:	http://is5.mzstatic.com/image/thumb/Purple128/v4/80/43/01/8043016a-7f84-9276-32f2-4e1ec0a8f3c6/source/60x60bb.jpg
-┃ 	100:http://is5.mzstatic.com/image/thumb/Purple128/v4/80/43/01/8043016a-7f84-9276-32f2-4e1ec0a8f3c6/source/100x100bb.jpg
-┃ 	512:http://is5.mzstatic.com/image/thumb/Purple128/v4/80/43/01/8043016a-7f84-9276-32f2-4e1ec0a8f3c6/source/512x512bb.jpg
-┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ Price:	0 CNY 免费
-┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ Environ:
-┃ Languages:	[AR ZH EN FR DE HE HI ID IT JA KO MS PL PT RU ZH ES TH ZH TR VI]
-┃ Features:		[iosUniversal]
-┃ Devices:		[iPad2Wifi-iPad2Wifi iPad23G-iPad23G iPhone4S-iPhone4S iPadThirdGen-iPadThirdGen iPadThirdGen4G-iPadThirdGen4G iPhone5-iPhone5 iPodTouchFifthGen-iPodTouchFifthGen iPadFourthGen-iPadFourthGen iPadFourthGen4G-iPadFourthGen4G iPadMini-iPadMini iPadMini4G-iPadMini4G iPhone5c-iPhone5c iPhone5s-iPhone5s iPadAir-iPadAir iPadAirCellular-iPadAirCellular iPadMiniRetina-iPadMiniRetina iPadMiniRetinaCellular-iPadMiniRetinaCellular iPhone6-iPhone6 iPhone6Plus-iPhone6Plus iPadAir2-iPadAir2 iPadAir2Cellular-iPadAir2Cellular iPadMini3-iPadMini3 iPadMini3Cellular-iPadMini3Cellular iPodTouchSixthGen-iPodTouchSixthGen iPhone6s-iPhone6s iPhone6sPlus-iPhone6sPlus iPadMini4-iPadMini4 iPadMini4Cellular-iPadMini4Cellular iPadPro-iPadPro iPadProCellular-iPadProCellular iPadPro97-iPadPro97 iPadPro97Cellular-iPadPro97Cellular iPhoneSE-iPhoneSE iPhone7-iPhone7 iPhone7Plus-iPhone7Plus iPad611-iPad611 iPad612-iPad612 iPad71-iPad71 iPad72-iPad72 iPad73-iPad73 iPad74-iPad74]
-┃ SystemRequirement:	8.0
-┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ Rating:
-┃ TrackContentRating:		12+
-┃ ContentAdvisoryRating: 	12+
-┃ Reason:					[偶尔/轻微的色情内容或裸露]
-┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ Ranking:
-┃	Current:	4	809103
-┃	Historic:	4.5	48392
-┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ Screenshots:
-┃ Urls:	[http://a3.mzstatic.com/us/r30/Purple128/v4/4a/55/4f/4a554fb5-38c9-0a09-b8d8-e86bb2bb961d/screen696x696.jpeg http://a5.mzstatic.com/us/r30/Purple118/v4/d7/e1/dc/d7e1dc99-98c2-7752-509b-47dc7fea69d9/screen696x696.jpeg http://a2.mzstatic.com/us/r30/Purple128/v4/c4/8f/e0/c48fe02b-22de-c5ab-f6e6-7e43bd09e96e/screen696x696.jpeg http://a3.mzstatic.com/us/r30/Purple118/v4/14/c7/c4/14c7c42d-7731-3b55-cdb7-8b4e86611eb4/screen696x696.jpeg http://a4.mzstatic.com/us/r30/Purple128/v4/6c/04/49/6c04495a-9c16-650b-5285-bb7c4d7bac9b/screen696x696.jpeg]
-┃ Ipad:	[http://a4.mzstatic.com/us/r30/Purple118/v4/dc/67/a3/dc67a38a-a174-fd60-acc9-c0841b1cb88c/sc1024x768.jpeg http://a2.mzstatic.com/us/r30/Purple118/v4/09/d1/a4/09d1a48b-2aef-9263-316a-76be9e8df3ea/sc1024x768.jpeg http://a1.mzstatic.com/us/r30/Purple128/v4/56/4a/77/564a7717-e82f-8f77-1e56-e8b5274d0df1/sc1024x768.jpeg]
-┃ TV:	[]
-┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ GameCenter Enabled              | false
-┃ VppDeviceBasedLicensingEnabled  | true
-┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ FileSizeBytes                   | 197679104
-┃ Version                         | 6.5.12
-┗┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-Description:
-微信是一款全方位的手机通讯应用，帮助你轻松连接全球好友。微信可以(通
-过SMS/MMS网络)发送短信、进行视频聊天、与好友一起玩游戏，以及分享自己的
-生活到朋友圈，让你感受耳目一新的移动生活方式。
-
-  为什么要使用微信：
-  • 多媒体消息：支持发送视频、图片、文本和语音消息。
-  • 群聊和通话：组建高达500人的群聊和高达9人的实时视频聊天。
-  • 免费语音和视频聊天：提供全球免费的高质量通话。
-  • WeChat Out：超低费率拨打全球的手机或固定电话（目前仅限于部分地区）。
-  • 表情商店：海量免费动态表情，包括热门卡通人物和电影，让聊天变得更生动有趣。
-  • 朋友圈：与好友分享每个精彩瞬间，记录自己的生活点滴。
-  • 隐私保护：严格保护用户的隐私安全，是唯一一款通过TRUSTe认证的实时通讯应用。
-  • 认识新朋友：通过“雷达加朋友”、“附近的人”和“摇一摇”认识新朋友。
-  • 实时位置共享：与好友分享地理位置，无需通过语言告诉对方。
-  • 多语言：支持超过20种语言界面，并支持多国语言的消息翻译。
-  · 微信运动，支持接入Apple Watch 及iPhone健康数据，可通过“WeRun-WeChat”公众号与好友一较高下。
-  • 更多功能: 支持跨平台、聊天室墙纸自定义、消息提醒自定义和公众号服务等。
-┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-ReleaseNotes:
-本次更新
-- 可以对视频进行编辑。
-- 可以设置某条朋友圈的互动不再通知。
-- 修复部分用户无法收到新消息提醒的问题。
-
-最近更新
-- 可在微信实验室体验正在探索的功能。
-- 聊天中查找聊天内容时，可以查找文件、图片、链接。
-- 群主可在群成员信息页中，了解对方是如何加入群聊的。
-- 选择图片时，可便捷地调整并预览已选择的内容。
-┏┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-┃ ReleaseDate                     | 2011-01-21T01:32:15Z
-┃ CurrentVersionReleaseDate       | 2017-07-12T02:28:11Z
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-that can also achieve via `Lookup().CNAPP(id)` in short.
-
-check [`api_test.go`](api_test.go) for more examples.
+check [`api_test.go`](api_test.go) for more details & examples.
 
 
 

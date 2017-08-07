@@ -3,20 +3,51 @@ package itunes_search
 import (
 	"net/http"
 	"net/url"
-	"encoding/json"
 	"strconv"
 	"strings"
+	"encoding/json"
 )
 
-type lookupResult struct {
+/**************************************************************
+* Structure Define
+**************************************************************/
+
+// iTunesResult represent iTunes response outer most structure
+type iTunesResult struct {
 	ResultCount int         `json:"resultCount"`
-	Results     []Entry    `json:"results"`
+	Results     []Entry     `json:"results"`
 }
 
+// Params holds iTunes API params.
+// See following url for more details:
+// https://affiliate.itunes.apple.com/resources/documentation/itunes-store-web-service-search-api/
 type Params struct {
 	url.Values
 	endpoint string
 }
+
+/**************************************************************
+* Enter Point
+**************************************************************/
+
+// Lookup begins the API chain
+func Lookup() Params {
+	return Params{make(url.Values), LookupURL}.Country(CN)
+}
+
+// Search begins the API chain with a series of search terms
+func Search(terms []string) Params {
+	return Params{make(url.Values), SearchURL}.Country(CN).Terms(terms)
+}
+
+// SearchOne begins the API chain with one term
+func SearchOne(term string) Params {
+	return Params{make(url.Values), SearchURL}.Country(CN).Term(term)
+}
+
+/**************************************************************
+* Chain Method
+**************************************************************/
 
 func (self Params) Term(term string) Params {
 	self.Values.Set("term", term)
@@ -63,6 +94,22 @@ func (self Params) AddMedia(media string) Params {
 	return self
 }
 
+func (self Params) ID(id int64) Params {
+	self.Values.Set(ITunesID, strconv.FormatInt(id, 10))
+	return self
+}
+
+func (self Params) BundleID(bundleID string) Params {
+	self.Values.Set(BundleID, bundleID)
+	return self
+}
+
+// App: restrict to application
+func (self Params) App() Params {
+	self.Values.Set("media", MediaSoftware)
+	return self
+}
+
 func (self Params) Limit(n int) Params {
 	if n > 200 {
 		n = 200
@@ -75,30 +122,9 @@ func (self Params) Limit(n int) Params {
 	return self
 }
 
-func (self Params) ID(id int64) Params {
-	self.Values.Set(KeyITunesID, strconv.FormatInt(id, 10))
-	return self
-}
-
-func (self Params) BundleID(bundleID string) Params {
-	self.Values.Set(KeyBundleID, bundleID)
-	return self
-}
-
-// CNAPP: set search & lookup constraint: CN & software
-func (self Params) CNAPP(id int64) Params {
-	self.Values.Set(KeyITunesID, strconv.FormatInt(id, 10))
-	self.Values.Set("media", MediaSoftware)
-	self.Values.Set("country", CN)
-	return self
-}
-
-// USAPP: set search & lookup constraint: US & software
-func (self Params) USAPP(id int64) Params {
-	self.Values.Set(KeyITunesID, strconv.FormatInt(id, 10))
-	self.Values.Set("media", MediaSoftware)
-	return self
-}
+/**************************************************************
+* End Point
+**************************************************************/
 
 // Results will finally do the request
 func (self Params) Results() ([]Entry, error) {
@@ -107,7 +133,7 @@ func (self Params) Results() ([]Entry, error) {
 		return nil, err
 	}
 
-	lr := new(lookupResult)
+	lr := new(iTunesResult)
 	defer res.Body.Close()
 	if err = json.NewDecoder(res.Body).Decode(lr); err != nil {
 		return nil, err
@@ -121,31 +147,10 @@ func (self Params) Results() ([]Entry, error) {
 }
 
 // Result assert there's one result
-func (params Params) Result() (*Entry, error) {
-	res, err := http.Get(LookupURL + params.Encode())
-	if err != nil {
+func (self Params) Result() (*Entry, error) {
+	if entries, err := self.Results(); err != nil {
 		return nil, err
+	} else {
+		return &(entries[0]), nil
 	}
-
-	lr := new(lookupResult)
-	defer res.Body.Close()
-	if err = json.NewDecoder(res.Body).Decode(lr); err != nil {
-		return nil, err
-	}
-
-	if lr.ResultCount == 0 || lr.Results == nil || len(lr.Results) == 0 {
-		return nil, ErrNotFound
-	}
-
-	return &(lr.Results[0]), nil
-}
-
-// Lookup begins the API chain
-func Lookup() Params {
-	return Params{make(url.Values), LookupURL}
-}
-
-// Search begins the API chain
-func Search() Params {
-	return Params{make(url.Values), SearchURL}
 }

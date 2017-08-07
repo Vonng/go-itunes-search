@@ -1,5 +1,10 @@
 package itunes_search
 
+import "errors"
+
+// ErrNotFound occurs when no result been found
+var ErrNotFound = errors.New("not found")
+
 const (
 	LookupURL = "https://itunes.apple.com/lookup?"
 	SearchURL = "https://itunes.apple.com/search?"
@@ -46,10 +51,14 @@ const (
 
 // lookup key type
 const (
-	KeyITunesID    = "id"
-	KeyArtistID    = "id"
-	KeyAMGArtistID = "amgArtistId"
-	KeyBundleID    = "bundleId"
+	ITunesID    = "id"
+	ArtistID    = "id"
+	AMGArtistID = "amgArtistId"
+	AMGAlbumID  = "amgAlbumId"
+	AMGVideoID  = "amgVideoId"
+	BundleID    = "bundleId"
+	UPC         = "upc"
+	ISBN        = "isbn"
 )
 
 // country code
