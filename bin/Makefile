@@ -9,7 +9,7 @@ mac:
 
 install:
 	go build -o itunes itunes.go
-	cp itunes $(GOPATH)/bin/itunes
+	mv itunes $(GOPATH)/bin/itunes
 
 clean:
 	rm -rf itunes

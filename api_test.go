@@ -21,12 +21,15 @@ func TestLookup(t *testing.T) {
 }
 
 // App Specific API
-func TestEntry_ToApp(t *testing.T) {
+func TestEntry_DetailCN(t *testing.T) {
 	res, _ := Lookup().ID(414478124).Result()
-	app := res.ToApp()
-	app.Print()
-	app.ParseExtras()
-	app.Print()
+	res.Detail(CN).Print()
+}
+
+// Test US Store
+func TestEntry_DetailUS(t *testing.T) {
+	res, _ := Lookup().Country(US).ID(414478124).Result()
+	res.Detail(US).Print()
 }
 
 func TestLookupCNStoreByiTunesID(t *testing.T) {

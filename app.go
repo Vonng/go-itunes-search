@@ -116,12 +116,13 @@ const appTemplateStr = `
   Reviews: {{.Reviews}}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
   Description:
-  {{.Description}}
+{{.Description}}
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
   Support Sites:
-  {{.SupportSites}}
+{{.SupportSites}}
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
   ReleaseNotes:
-  {{.ReleaseNotes}}
+{{.ReleaseNotes}}
 ┏┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Release: {{.ReleaseTime}}
 ┃ Publish: {{.PublishTime}}
@@ -214,9 +215,9 @@ func (self *Entry) ToApp() (app *App) {
 	return app
 }
 
-func (self *Entry) Detail() (app *App) {
+func (self *Entry) Detail(country string) (app *App) {
 	app = self.ToApp()
-	app.ParseExtras()
+	app.ParseExtras(country)
 	return
 }
 
@@ -224,13 +225,22 @@ func (self *Entry) Detail() (app *App) {
 * ParseExtras:	Fill APP's missing fields
 **************************************************************/
 
-// ParseExtras will fill reserved fields by fetching & parsing iTunes CN Store
-// It's good but not necessary
-func (app *App) ParseExtras() error {
+// ParseExtras will fill reserved fields by fetching & parsing iTunes Store
+// It's good but not necessary. By default using chinese store
+func (app *App) ParseExtras(country string) error {
 	if app == nil || app.ID == 0 {
 		return ErrParseFailed
 	}
-	doc, err := goquery.NewDocument("https://itunes.apple.com/cn/app/id" + strconv.FormatInt(app.ID, 10))
+	if country == "" {
+		country = "cn"
+	}
+
+	url := fmt.Sprintf("https://itunes.apple.com/%s/app/id%d",
+		strings.ToLower(country),
+		app.ID,
+	)
+
+	doc, err := goquery.NewDocument(url)
 	if err != nil {
 		return err
 	}
@@ -332,7 +342,10 @@ func (app *App) ParseExtras() error {
 	mid.Find("div.customer-review").Map(func(ind int, s *goquery.Selection) string {
 		title := getText(s.Find("span.customerReviewTitle"))
 		rating := getAttr(s.Find("div.rating"), "aria-label")
-		user := strings.TrimSpace(strings.TrimPrefix(getText(s.Find("span.user-info")), "评论人："))
+		user := getText(s.Find("span.user-info"))
+		if piece := strings.Split(user, "\n"); len(piece) > 1 {
+			user = strings.TrimSpace(piece[len(piece)-1])
+		}
 		content := getRichText(s.Find("p.content"))
 		if user != "" {
 			reviews = append(reviews, [4]string{user, rating, title, content})
