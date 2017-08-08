@@ -2,8 +2,10 @@ package itunes_search
 
 import "errors"
 
-// ErrNotFound occurs when no result been found
-var ErrNotFound = errors.New("not found")
+var (
+	ErrNotFound    = errors.New("not found")
+	ErrParseFailed = errors.New("parse failed")
+)
 
 const (
 	LookupURL = "https://itunes.apple.com/lookup?"

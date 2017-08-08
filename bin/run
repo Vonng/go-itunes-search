@@ -1,0 +1,3 @@
+#!/bin/bash
+go run app_lookup.go 414478124
+go run app_lookup.go com.tencent.xin

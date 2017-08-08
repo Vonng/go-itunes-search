@@ -11,20 +11,20 @@ type Entry struct {
 	TrackID                            int64    `json:"trackId"` // Track
 	TrackName                          string   `json:"trackName"`
 	TrackCensoredName                  string   `json:"trackCensoredName"`
-	TrackViewUrl                       string   `json:"trackViewUrl"`
+	TrackViewURL                       string   `json:"trackViewUrl"`
 	BundleID                           string   `json:"bundleId"` // App bundle
 	ArtistID                           int64    `json:"artistId"` // Artist
 	ArtistName                         string   `json:"artistName"`
-	ArtistViewUrl                      string   `json:"artistViewUrl"`
+	ArtistViewURL                      string   `json:"artistViewUrl"`
 	SellerName                         string   `json:"sellerName"` // Seller
-	SellerUrl                          string   `json:"sellerUrl"`
+	SellerURL                          string   `json:"sellerUrl"`
 	PrimaryGenreID                     int64    `json:"primaryGenreId"` // Genre
 	PrimaryGenreName                   string   `json:"primaryGenreName"`
 	Genres                             []string `json:"genres"`
 	GenreIDs                           []string `json:"genreIds"`
-	ArtworkUrl60                       string   `json:"artworkUrl60"` // Icon
-	ArtworkUrl100                      string   `json:"artworkUrl100"`
-	ArtworkUrl512                      string   `json:"artworkUrl512"`
+	ArtworkURL60                       string   `json:"artworkUrl60"` // Icon
+	ArtworkURL100                      string   `json:"artworkUrl100"`
+	ArtworkURL512                      string   `json:"artworkUrl512"`
 	Price                              float64  `json:"price"` // Price
 	Currency                           string   `json:"currency"`
 	FormattedPrice                     string   `json:"formattedPrice"`
@@ -41,9 +41,9 @@ type Entry struct {
 	AverageUserRatingForCurrentVersion float64  `json:"averageUserRatingForCurrentVersion"`
 	Kind                               string   `json:"kind"` // Type
 	WrapperType                        string   `json:"wrapperType"`
-	ScreenshotUrls                     []string `json:"screenshotUrls"` // Screenshots
-	IpadScreenshotUrls                 []string `json:"ipadScreenshotUrls"`
-	AppletvScreenshotUrls              []string `json:"appletvScreenshotUrls"`
+	ScreenshotURLs                     []string `json:"screenshotUrls"` // Screenshots
+	IpadScreenshotURLs                 []string `json:"ipadScreenshotUrls"`
+	AppletvScreenshotURLs              []string `json:"appletvScreenshotUrls"`
 	IsGameCenterEnabled                bool     `json:"isGameCenterEnabled"` // Flags
 	IsVppDeviceBasedLicensingEnabled   bool     `json:"isVppDeviceBasedLicensingEnabled"`
 	FileSizeBytes                      string   `json:"fileSizeBytes"` // Attribute
@@ -58,20 +58,20 @@ const entryTemplateStr = `
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ┃ iTunes Track [ {{.Kind}} / {{.WrapperType}} ]
 ┃	{{ .TrackID }} {{.TrackName}} ({{.TrackCensoredName}})
-┃	[{{.BundleID}}]  {{.TrackViewUrl}}
+┃	[{{.BundleID}}]  {{.TrackViewURL}}
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Artist:
-┃	{{.ArtistID}} {{.ArtistName}}  {{.ArtistViewUrl}}
-┃	{{.SellerName}} {{.SellerUrl}}
+┃	{{.ArtistID}} {{.ArtistName}}  {{.ArtistViewURL}}
+┃	{{.SellerName}} {{.SellerURL}}
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Genre:
 ┃	{{.PrimaryGenreID}} {{.PrimaryGenreName}}
 ┃	{{.GenreIDs}} {{.Genres}}
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Icon:
-┃ 	60:	{{.ArtworkUrl60}}
-┃ 	100:{{.ArtworkUrl100}}
-┃ 	512:{{.ArtworkUrl512}}
+┃ 	60:	{{.ArtworkURL60}}
+┃ 	100:{{.ArtworkURL100}}
+┃ 	512:{{.ArtworkURL512}}
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Price: {{.Price}} {{.Currency}} {{.FormattedPrice}}
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
@@ -91,9 +91,9 @@ const entryTemplateStr = `
 ┃	Historic: | {{.AverageUserRatingForCurrentVersion}}/{{.UserRatingCountForCurrentVersion}}
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Screenshots:
-┃ 	Urls: {{.ScreenshotUrls}}
-┃ 	Ipad: {{.IpadScreenshotUrls}}
-┃ 	TV:   {{.AppletvScreenshotUrls}}
+┃ 	URLs: {{.ScreenshotURLs}}
+┃ 	Ipad: {{.IpadScreenshotURLs}}
+┃ 	TV:   {{.AppletvScreenshotURLs}}
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ GameCenter Enabled | {{.IsGameCenterEnabled}}
 ┃ VppDevice Enabled  | {{.IsVppDeviceBasedLicensingEnabled}}

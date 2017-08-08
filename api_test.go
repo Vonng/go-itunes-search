@@ -20,6 +20,15 @@ func TestLookup(t *testing.T) {
 	res.Print()
 }
 
+// App Specific API
+func TestEntry_ToApp(t *testing.T) {
+	res, _ := Lookup().ID(414478124).Result()
+	app := res.ToApp()
+	app.Print()
+	app.ParseExtras()
+	app.Print()
+}
+
 func TestLookupCNStoreByiTunesID(t *testing.T) {
 	testCase := []struct {
 		ID         int64

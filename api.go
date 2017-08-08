@@ -49,6 +49,11 @@ func SearchOne(term string) Params {
 * Chain Method
 **************************************************************/
 
+func (self Params) SetParam(k, v string) Params {
+	self.Values.Set(k, v)
+	return self
+}
+
 func (self Params) Term(term string) Params {
 	self.Values.Set("term", term)
 	return self
@@ -109,7 +114,6 @@ func (self Params) App() Params {
 	self.Values.Set("media", Software)
 	return self
 }
-
 
 func (self Params) Limit(n int) Params {
 	if n > 200 {
