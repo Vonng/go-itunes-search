@@ -22,7 +22,7 @@ import "github.com/PuerkitoBio/goquery"
 // Some fields, like Platforms, InAppPurchase SiblingApps RelatedApps SupportSite & Reviews
 // could only be fetched from iTunes page. a parser adjust for CN Store is provided
 type App struct {
-	ID               int64  `sql:",pk"`
+	ID               int64
 	Name             string
 	URL              string
 	Icon             string
@@ -41,7 +41,7 @@ type App struct {
 	GenreIDs         []int64
 	Icon60           string
 	Icon100          string
-	Price            int64  `sql:",notnull"` // Since all price is ￥<int> or $<x.99>, use int rather than float
+	Price            int64 // Since all price is ￥<int> or $<x.99>, use int rather than float
 	Currency         string
 	System           string
 	Features         []string
@@ -334,6 +334,9 @@ func (app *App) ParseExtras(country string) error {
 			app.SupportSites = sb
 		}
 	}
+	if app.SupportSites == "" {
+		app.SupportSites = "{}"
+	}
 
 	// app.Reviews:	quad-tuple for `<user,rating,title,content>`
 	// more detailed comment could be fetched from
@@ -356,6 +359,9 @@ func (app *App) ParseExtras(country string) error {
 		if sb := string(body); sb != "" && sb != "null" {
 			app.Reviews = sb
 		}
+	}
+	if app.Reviews == "" {
+		app.Reviews = "[]"
 	}
 
 	return nil

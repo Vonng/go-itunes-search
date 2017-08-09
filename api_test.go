@@ -16,13 +16,13 @@ func TestSearch(t *testing.T) {
 
 // Simplest lookup example
 func TestLookup(t *testing.T) {
-	res, _ := Lookup().ID(414478124).Result()
+	res, _ := Lookup().ID(989673964).Result()
 	res.Print()
 }
 
 // App Specific API
 func TestEntry_DetailCN(t *testing.T) {
-	res, _ := Lookup().ID(414478124).Result()
+	res, _ := Lookup().ID(989673964).Result()
 	res.Detail(CN).Print()
 }
 
