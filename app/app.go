@@ -1,4 +1,4 @@
-package itunes_search
+package app
 
 import (
 	"os"
@@ -13,6 +13,7 @@ import (
 )
 
 import "github.com/PuerkitoBio/goquery"
+import . "github.com/Vonng/go-itunes-search"
 
 /**************************************************************
 * struct:	App
@@ -22,7 +23,7 @@ import "github.com/PuerkitoBio/goquery"
 // Some fields, like Platforms, InAppPurchase SiblingApps RelatedApps SupportSite & Reviews
 // could only be fetched from iTunes page. a parser adjust for CN Store is provided
 type App struct {
-	ID               int64
+	ID               int64        `sql:",pk"`
 	Name             string
 	URL              string
 	Icon             string
@@ -34,22 +35,22 @@ type App struct {
 	AuthorURL        string
 	VendorName       string
 	VendorURL        string
-	Copyright        string // reserved
+	Copyright        string
 	GenreID          int64
-	GenreName        string
-	Genres           []string
-	GenreIDs         []int64
+	GenreIDList      []int64    `pg:",array"`
+	Genre            string
+	GenreList        []string   `pg:",array"`
 	Icon60           string
 	Icon100          string
-	Price            int64 // Since all price is ￥<int> or $<x.99>, use int rather than float
+	Price            int64      `sql:",notnull"`
 	Currency         string
 	System           string
-	Features         []string
-	Devices          []string
-	Languages        []string
-	Platforms        []string // reserved
+	Features         []string   `pg:",array"`
+	Devices          []string   `pg:",array"`
+	Languages        []string   `pg:",array"`
+	Platforms        []string   `pg:",array"`
 	Rating           string
-	Reasons          []string
+	Reasons          []string   `pg:",array"`
 	Size             int64
 	CntRating        int64
 	AvgRating        float64
@@ -57,17 +58,19 @@ type App struct {
 	AvgRatingCurrent float64
 	VppDevice        bool
 	GameCenter       bool
-	Screenshots      []string
-	InAppPurchase    []string // reserved
-	SiblingApps      []int64  // reserved
-	RelatedApps      []int64  // reserved
-	SupportSites     string   // reserved
-	Reviews          string   // reserved
+	Screenshots      []string   `pg:",array"`
+	InAppPurchase    []string   `pg:",array"`
+	SiblingApps      []int64    `pg:",array"`
+	RelatedApps      []int64    `pg:",array"`
+	SupportSites     string
+	Reviews          string
 	Description      string
 	ReleaseNotes     string
+	Extra            string
 	ReleaseTime      time.Time
 	PublishTime      time.Time
 	CrawledTime      time.Time
+	tableName        struct{}    `sql:"apple"`
 }
 
 /**************************************************************
@@ -82,11 +85,12 @@ const appTemplateStr = `
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Provider:
 ┃	{{.AuthorID}} {{.AuthorName}}  {{.AuthorURL}}
-┃	{{.VendorName}} {{.VendorURL}}
+┃	{{.VendorName}} {{.Copyright}}
+┃	{{.VendorURL}}
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Genre:
-┃	{{.GenreID}} {{.GenreName}}
-┃	{{.GenreIDs}} {{.Genres}}
+┃	{{.GenreID}} {{.GenreIDList}}
+┃	{{.Genre}} {{.GenreList}}
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Icon60 : {{.Icon60}}
 ┃ Icon100: {{.Icon100}}
@@ -141,58 +145,58 @@ func (self *App) Print() {
 }
 
 /**************************************************************
-* constructor:	Entry.ToApp()
+* constructor:	NewApp(*Entry) *App
 * 	Create App from Entry
 **************************************************************/
 
-// Entry_ToApp will generate a app record from entry
-func (self *Entry) ToApp() (app *App) {
+// NewApp create app from entry and guaranteed to success
+func NewApp(entry *Entry) (app *App) {
 	app = new(App)
-	app.ID = self.TrackID
-	app.Name = self.TrackName
-	app.URL = self.TrackViewURL
+	app.ID = entry.TrackID
+	app.Name = entry.TrackName
+	app.URL = entry.TrackViewURL
 
-	app.Icon = self.ArtworkURL512
-	app.Kind = self.Kind
-	app.Version = self.Version
-	app.BundleID = self.BundleID
+	app.Icon = entry.ArtworkURL512
+	app.Kind = entry.Kind
+	app.Version = entry.Version
+	app.BundleID = entry.BundleID
 
-	app.AuthorID = self.ArtistID
-	app.AuthorName = self.ArtistName
-	app.AuthorURL = self.ArtistViewURL
-	app.VendorName = self.SellerName
-	app.VendorURL = self.SellerURL
+	app.AuthorID = entry.ArtistID
+	app.AuthorName = entry.ArtistName
+	app.AuthorURL = entry.ArtistViewURL
+	app.VendorName = entry.SellerName
+	app.VendorURL = entry.SellerURL
 
-	app.GenreID = self.PrimaryGenreID
-	app.GenreName = self.PrimaryGenreName
-	app.Genres = self.Genres
-	app.GenreIDs = stringSliceToInt(self.GenreIDs)
+	app.GenreID = entry.PrimaryGenreID
+	app.GenreIDList = stringSliceToInt(entry.GenreIDs)
+	app.Genre = entry.PrimaryGenreName
+	app.GenreList = entry.Genres
 
-	app.Icon60 = self.ArtworkURL60
-	app.Icon100 = self.ArtworkURL100
-	app.Price = int64(math.Ceil(self.Price))
-	app.Currency = self.Currency
+	app.Icon60 = entry.ArtworkURL60
+	app.Icon100 = entry.ArtworkURL100
+	app.Price = int64(math.Ceil(entry.Price))
+	app.Currency = entry.Currency
 
-	app.System = self.MinimumOsVersion
-	app.Features = self.Features
-	app.Devices = self.SupportedDevices
-	app.Languages = self.LanguageCodesISO2A
+	app.System = entry.MinimumOsVersion
+	app.Features = entry.Features
+	app.Devices = entry.SupportedDevices
+	app.Languages = entry.LanguageCodesISO2A
 
-	app.Rating = self.TrackContentRating
+	app.Rating = entry.TrackContentRating
 	if app.Rating == "" {
-		app.Rating = self.ContentAdvisoryRating
+		app.Rating = entry.ContentAdvisoryRating
 	}
-	app.Reasons = self.Advisories
+	app.Reasons = entry.Advisories
 
-	app.Size, _ = strconv.ParseInt(self.FileSizeBytes, 10, 64)
-	app.CntRating = self.UserRatingCount
-	app.AvgRating = self.AverageUserRating
-	app.CntRatingCurrent = self.UserRatingCountForCurrentVersion
-	app.AvgRatingCurrent = self.AverageUserRatingForCurrentVersion
-	app.VppDevice = self.IsVppDeviceBasedLicensingEnabled
-	app.GameCenter = self.IsGameCenterEnabled
+	app.Size, _ = strconv.ParseInt(entry.FileSizeBytes, 10, 64)
+	app.CntRating = entry.UserRatingCount
+	app.AvgRating = entry.AverageUserRating
+	app.CntRatingCurrent = entry.UserRatingCountForCurrentVersion
+	app.AvgRatingCurrent = entry.AverageUserRatingForCurrentVersion
+	app.VppDevice = entry.IsVppDeviceBasedLicensingEnabled
+	app.GameCenter = entry.IsGameCenterEnabled
 
-	app.Screenshots = merge(self.ScreenshotURLs, self.AppletvScreenshotURLs, self.IpadScreenshotURLs)
+	app.Screenshots = merge(entry.ScreenshotURLs, entry.AppletvScreenshotURLs, entry.IpadScreenshotURLs)
 
 	// Reserved fields: these fields should be fetched from iTunes page
 	// app.Copyright
@@ -203,10 +207,10 @@ func (self *Entry) ToApp() (app *App) {
 	// app.SupportSites
 	// app.Reviews
 
-	app.Description = self.Description
-	app.ReleaseNotes = self.ReleaseNotes
-	app.ReleaseTime, _ = time.Parse(time.RFC3339, self.CurrentVersionReleaseDate)
-	app.PublishTime, _ = time.Parse(time.RFC3339, self.ReleaseDate)
+	app.Description = entry.Description
+	app.ReleaseNotes = entry.ReleaseNotes
+	app.ReleaseTime, _ = time.Parse(time.RFC3339, entry.CurrentVersionReleaseDate)
+	app.PublishTime, _ = time.Parse(time.RFC3339, entry.ReleaseDate)
 	app.CrawledTime = time.Now()
 
 	sort.Strings(app.Devices)
@@ -215,8 +219,9 @@ func (self *Entry) ToApp() (app *App) {
 	return app
 }
 
-func (self *Entry) Detail(country string) (app *App) {
-	app = self.ToApp()
+// NewDetailedApp will parse extra info while omit error
+func NewDetailedApp(entry *Entry, country string) (app *App) {
+	app = NewApp(entry)
 	app.ParseExtras(country)
 	return
 }
@@ -359,9 +364,6 @@ func (app *App) ParseExtras(country string) error {
 		if sb := string(body); sb != "" && sb != "null" {
 			app.Reviews = sb
 		}
-	}
-	if app.Reviews == "" {
-		app.Reviews = "[]"
 	}
 
 	return nil

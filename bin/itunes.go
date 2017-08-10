@@ -4,9 +4,12 @@ import (
 	"os"
 	"fmt"
 	"flag"
+	"strconv"
 )
 
 import . "github.com/Vonng/go-itunes-search"
+import . "github.com/Vonng/go-itunes-search/app"
+import "github.com/olekukonko/tablewriter"
 
 // flags
 var (
@@ -28,36 +31,38 @@ func HandleSearch(keywords string) {
 
 	fmt.Printf("%d result returned.\n", len(res))
 	if list {
-		fmt.Println("------------------------------------------------------------------------------------------")
-		fmt.Printf("%-10s|%-42s|%-s\n", "iTunesID", "BundleID", " Name & Ver")
-		fmt.Println("------------------------------------------------------------------------------------------")
-		for _, r := range res {
-			app := r.ToApp()
-			fmt.Printf("%-10d %-42s %-s %s\n", app.ID, app.BundleID, app.Name, app.Version)
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetHeader([]string{"iTunesID", "BundleID", "Name", "Ver"})
+		for _, entry := range res {
+			table.Append([]string{
+				strconv.FormatInt(entry.TrackID, 10),
+				entry.BundleID,
+				entry.TrackName,
+				entry.Version,
+			})
 		}
-		fmt.Println("------------------------------------------------------------------------------------------")
+		table.Render()
 	} else if detail {
-		for _, r := range res {
-			r.Detail(country).Print()
+		for _, entry := range res {
+			NewDetailedApp(&entry, country).Print()
 		}
 	} else {
-		for _, r := range res {
-			r.ToApp().Print()
+		for _, entry := range res {
+			NewDetailedApp(&entry, country).Print()
 		}
 	}
-
 }
 
 func HandleLookup(idType, idValue string) {
-	res, err := Lookup().SetParam(idType, idValue).Country(country).App().Limit(1).Result()
+	entry, err := Lookup().SetParam(idType, idValue).Country(country).App().Limit(1).Result()
 	if err != nil {
 		fmt.Printf("error when looup %s:%s: %s\n", idType, idValue, err.Error())
 		os.Exit(-1)
 	}
 	if detail {
-		res.Detail(country).Print()
+		NewDetailedApp(entry, country).Print()
 	} else {
-		res.ToApp().Print()
+		NewApp(entry).Print()
 	}
 }
 

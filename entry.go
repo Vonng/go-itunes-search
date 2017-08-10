@@ -19,9 +19,9 @@ type Entry struct {
 	SellerName                         string   `json:"sellerName"` // Seller
 	SellerURL                          string   `json:"sellerUrl"`
 	PrimaryGenreID                     int64    `json:"primaryGenreId"` // Genre
+	GenreIDs                           []string `json:"genreIds"`
 	PrimaryGenreName                   string   `json:"primaryGenreName"`
 	Genres                             []string `json:"genres"`
-	GenreIDs                           []string `json:"genreIds"`
 	ArtworkURL60                       string   `json:"artworkUrl60"` // Icon
 	ArtworkURL100                      string   `json:"artworkUrl100"`
 	ArtworkURL512                      string   `json:"artworkUrl512"`
@@ -65,8 +65,8 @@ const entryTemplateStr = `
 ┃	{{.SellerName}} {{.SellerURL}}
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Genre:
-┃	{{.PrimaryGenreID}} {{.PrimaryGenreName}}
-┃	{{.GenreIDs}} {{.Genres}}
+┃	{{.PrimaryGenreID}} {{.GenreIDs}}
+┃	{{.PrimaryGenreName}} {{.Genres}}
 ┣┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 ┃ Icon:
 ┃ 	60:	{{.ArtworkURL60}}
