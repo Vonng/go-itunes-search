@@ -473,7 +473,8 @@ go get github.com/PuerkitoBio/goquery
 
 ### Other
 
-* An apple [daemon](app/daemon/) for crawling iTunes store.
+* An apple [daemon](daemon/) for crawling iTunes store.
+
 
 ## License
 

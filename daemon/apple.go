@@ -11,6 +11,8 @@ import (
 	"github.com/go-pg/pg"
 	"github.com/Vonng/go-itunes-search/app"
 	log "github.com/Sirupsen/logrus"
+	"os"
+	"strings"
 )
 
 // ID type indicator
@@ -207,7 +209,33 @@ func Run(n int) {
 }
 
 func main() {
-	log.SetLevel(log.DebugLevel)
+	log.SetLevel(log.InfoLevel)
+
+	if len(os.Args) > 2 {
+		action, id := os.Args[1], os.Args[2]
+		action = strings.ToLower(action)
+		switch action {
+		case "a", "id", "aid", "itunes":
+			log.Infof("handle iTunesID=%s", id)
+			if err := HandleAppleByID(id); err != nil {
+				log.Errorf("handle iTunesID=%s failed: %s", id, err.Error())
+			}
+			log.Infof("done iTunesID=%s", id)
+		case "b", "bid", "bundleid", "bundle_id", "bundle", "pkg", "package":
+			log.Infof("handle BundleID=%s", id)
+			if err := HandleAppleByBundleID(id); err != nil {
+				log.Errorf("handle BundleID=%s failed: %s", id, err.Error())
+			}
+			log.Infof("done BundleID=%s", id)
+		case "k", "key", "keyword", "keywords", "search":
+			log.Infof("handle Keywords=%s", id)
+			if err := HandleApplesByKeyword(id); err != nil {
+				log.Errorf("handle Keywords=%s failed: %s", id, err.Error())
+			}
+			log.Infof("done Keywords=%s", id)
+		}
+		os.Exit(0)
+	}
 
 	Run(5)
 	<-make(chan bool)
