@@ -212,7 +212,6 @@ func NewApp(entry *Entry) (app *App) {
 	app.ReleaseTime, _ = time.Parse(time.RFC3339, entry.CurrentVersionReleaseDate)
 	app.PublishTime, _ = time.Parse(time.RFC3339, entry.ReleaseDate)
 	app.CrawledTime = time.Now()
-
 	sort.Strings(app.Devices)
 	sort.Strings(app.Languages)
 
@@ -354,14 +353,35 @@ func (app *App) ParseExtras(country string) error {
 
 	// app.Platforms
 	platform := make(map[string]bool, 6)
+	if app.Kind == "mac-software" {
+		platform["macOS"] = true
+	}
+
+	// app.Devices fill
+	if systemStr := getText(left.Find(`span[itemprop="operatingSystem"]`)); systemStr != "" {
+		if strings.Contains(systemStr, "OS X") || strings.Contains(systemStr, "macOS") {
+			platform["macOS"] = true
+			if strings.Contains(systemStr, "64") {
+				app.Devices = append(app.Devices, "x64")
+			} else if strings.Contains(systemStr, "32") {
+				app.Devices = append(app.Devices, "x86")
+			} else {
+				app.Devices = append(app.Devices, "mac")
+			}
+		}
+		if strings.Contains(systemStr, "tvOS") {
+			platform["AppleTV"] = true
+		}
+	}
+
 
 	// infer iPhone,iPad,iPod support from Device
+	app.Devices = merge(app.Devices)
 	deviceList := strings.Join(app.Devices, ",")
 	platform["iPad"] = strings.Contains(deviceList, "iPad")
 	platform["iPhone"] = strings.Contains(deviceList, "iPhone")
 	platform["iPod"] = strings.Contains(deviceList, "iPod")
-	platform["macOS"] = strings.Contains(app.System, "macOS") || strings.Contains(app.System, "OS X")
-	platform["AppleTV"] = strings.Contains(app.System, "tvOS")
+	platform["AppleTV"] = strings.Contains(deviceList, "AppleTV")
 
 	// infer iPhone, iPad support from left stack badge
 	if PadnPhone := getText(left.Find("div.fat-binary-blurb span:last-of-type")); PadnPhone != "" {
@@ -424,13 +444,14 @@ func (app *App) ParseExtras(country string) error {
 		support[s.Text()], _ = s.Attr("href")
 		return ""
 	})
-	if body, err := json.MarshalIndent(support, "", "    "); err == nil {
-		if sb := string(body); sb != "" && sb != "null" {
-			app.SupportSites = sb
+	if len(support) == 0 {
+		app.SupportSites = ""
+	} else {
+		if body, err := json.MarshalIndent(support, "", "    "); err == nil {
+			if sb := string(body); sb != "" && sb != "null" {
+				app.SupportSites = sb
+			}
 		}
-	}
-	if app.SupportSites == "" {
-		app.SupportSites = "{}"
 	}
 
 	// app.Reviews:	quad-tuple for `<user,rating,title,content>`

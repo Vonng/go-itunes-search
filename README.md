@@ -61,7 +61,7 @@ Usage of itunes:
 
 #### Search keywords
 
-```bash
+```
 # search keyword `credit` in US Store, return 10 records, list format
 $ itunes -s hello -c US -n 10 -l
 10 result returned.
@@ -221,7 +221,7 @@ itunes -i 414478124 -c JP -d
 itunes -b com.tencent.smoba
 ```
 
-```bash
+```
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ┃ [software] 989673964 com.tencent.smoba 王者荣耀 1.20.1.21
 ┃ https://itunes.apple.com/cn/app/%E7%8E%8B%E8%80%85%E8%8D%A3%E8%80%80/id989673964?mt=8&uo=4

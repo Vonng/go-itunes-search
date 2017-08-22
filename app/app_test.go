@@ -12,7 +12,7 @@ func TestNewApp(t *testing.T) {
 
 // Test US Store
 func TestEntry_DetailUS(t *testing.T) {
-	entry, _ := Lookup().Country(US).ID(414478124).Result()
+	entry, _ := Lookup().Country(US).ID(1061097588).Result()
 	NewDetailedApp(entry, "US").Print()
 }
 
