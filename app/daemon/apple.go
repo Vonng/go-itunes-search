@@ -51,9 +51,9 @@ func (m *Message) Valid() bool {
 // Global postgreSQL instance
 var Pg = pg.Connect(&pg.Options{
 	Addr:     ":5432",
-	Database: "haha",
-	User:     "haha",
-	Password: "xixihaha",
+	Database: "meta",
+	User:     "meta",
+	Password: "meta",
 })
 
 // SeenID will check whether given iTunesID is already in database

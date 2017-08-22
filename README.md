@@ -463,8 +463,17 @@ Following fields may change during parsing, and won't change if parse failed
 - Merge `TrackContentRating` & `ContentAdvisoryRating` to `Rating`
 
 
+### Dependency
 
+```bash
+go get github.com/go-pg/pg
+go get github.com/Sirupsen/logrus
+go get github.com/PuerkitoBio/goquery
+```
 
+### Other
+
+* An apple [daemon](app/daemon/) for crawling iTunes store.
 
 ## License
 
