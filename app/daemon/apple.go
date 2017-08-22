@@ -111,7 +111,7 @@ func HandleApplesByKeyword(keyword string) error {
 		if i > 0 {
 			sql.WriteByte(',')
 		}
-		sql.WriteString(`('A`)
+		sql.WriteString(`('!`)
 		sql.WriteString(strconv.FormatInt(apple.ID, 10))
 		sql.WriteString(`')`)
 	}
