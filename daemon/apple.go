@@ -177,23 +177,23 @@ func Worker(id int, c <-chan Message) {
 	for msg := range c {
 		switch msg.Type {
 		case TypeITunesID:
-			log.Infof("[WORKER:%d] handle iTunesID=%s", id, msg.ID)
 			if err = HandleAppleByID(msg.ID); err != nil {
 				log.Errorf("[WORKER:%d] handle iTunesID=%s failed: %s", id, msg.ID, err.Error())
+			} else {
+				log.Infof("[WORKER:%d] done iTunesID=%s", id, msg.ID)
 			}
-			log.Infof("[WORKER:%d] done iTunesID=%s", id, msg.ID)
 		case TypeBundleID:
-			log.Infof("[WORKER:%d] handle BundleID=%s", id, msg.ID)
 			if err = HandleAppleByBundleID(msg.ID); err != nil {
 				log.Errorf("[WORKER:%d] handle BundleID=%s failed: %s", id, msg.ID, err.Error())
+			} else {
+				log.Infof("[WORKER:%d] done BundleID=%s", id, msg.ID)
 			}
-			log.Infof("[WORKER:%d] done BundleID=%s", id, msg.ID)
 		case TypeKeywords:
-			log.Infof("[WORKER:%d] handle Keyword=%s", id, msg.ID)
 			if err = HandleApplesByKeyword(msg.ID); err != nil {
 				log.Errorf("[WORKER:%d] handle Keyword=%s failed: %s", id, msg.ID, err.Error())
+			} else {
+				log.Infof("[WORKER:%d] done keyword=%s", id, msg.ID)
 			}
-			log.Infof("[WORKER:%d] done keyword=%s", id, msg.ID)
 		}
 	}
 	log.Infof("[WORK] %d finish", id)
@@ -216,23 +216,23 @@ func main() {
 		action = strings.ToLower(action)
 		switch action {
 		case "a", "id", "aid", "itunes":
-			log.Infof("handle iTunesID=%s", id)
 			if err := HandleAppleByID(id); err != nil {
 				log.Errorf("handle iTunesID=%s failed: %s", id, err.Error())
+			} else {
+				log.Infof("done iTunesID=%s", id)
 			}
-			log.Infof("done iTunesID=%s", id)
 		case "b", "bid", "bundleid", "bundle_id", "bundle", "pkg", "package":
-			log.Infof("handle BundleID=%s", id)
 			if err := HandleAppleByBundleID(id); err != nil {
 				log.Errorf("handle BundleID=%s failed: %s", id, err.Error())
+			} else {
+				log.Infof("done BundleID=%s", id)
 			}
-			log.Infof("done BundleID=%s", id)
 		case "k", "key", "keyword", "keywords", "search":
-			log.Infof("handle Keywords=%s", id)
 			if err := HandleApplesByKeyword(id); err != nil {
 				log.Errorf("handle Keywords=%s failed: %s", id, err.Error())
+			} else {
+				log.Infof("done Keywords=%s", id)
 			}
-			log.Infof("done Keywords=%s", id)
 		}
 		os.Exit(0)
 	}
